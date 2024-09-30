@@ -60,7 +60,7 @@ export default function SidebarNav({ isMobile, isCollapsed }: SidebarNavProps) {
         >
           <Link href={item.href}>
             <item.icon className="h-[22px] w-[22px]" />
-            {(!isMobile || !isCollapsed) && (
+            {(isMobile || !isCollapsed) && (
               <span className="ml-3">{item.label}</span>
             )}
           </Link>
