@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import SidebarNav from './SidebarNav'
 import SidebarToggle from './SidebarToggle'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 
 
 const MOBILE_WINDOW_WIDTH_LIMIT = 1024
@@ -120,7 +121,12 @@ export default function Sidebar() {
           </div>
 
           <div>
-            {/* TODO: User profile from clerk */}
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
 
           {!isMobile && (
