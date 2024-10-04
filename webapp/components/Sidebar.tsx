@@ -109,7 +109,7 @@ export default function Sidebar() {
           >
             {!isCollapsed && (
               <h1 className="text-4xl font-bold mb-10">
-                AI Marketing Platform
+                LLM 101
               </h1>
             )}
 

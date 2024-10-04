@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import React from 'react'
 
 interface ProjectPageProps {
@@ -8,11 +7,8 @@ interface ProjectPageProps {
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {
-  if (params.projectId !== "123") {
-    return notFound()
-  }
 
   return (
-    <div>Projects Page: {params.projectId}</div>
+    <h1>{params.projectId}</h1>
   )
 }
