@@ -1,4 +1,4 @@
-import ProjectDetailView from '@/components/ProjectDetailView'
+import ProjectDetailView from '@/components/project-detail/ProjectDetailView'
 import { getProject } from '@/server/queries'
 import { notFound } from 'next/navigation'
 import React from 'react'
