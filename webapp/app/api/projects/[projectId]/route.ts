@@ -3,7 +3,7 @@ import { projectTable } from "@/server/db/schema";
 import { getAuth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import z from 'zod';
+import { z } from "zod";
 
 const updateProjectSchema = z.object({
   title: z.string().min(1),
