@@ -1,3 +1,6 @@
+import ProjectDetailView from '@/components/ProjectDetailView'
+import { getProject } from '@/server/queries'
+import { notFound } from 'next/navigation'
 import React from 'react'
 
 interface ProjectPageProps {
@@ -6,9 +9,16 @@ interface ProjectPageProps {
   }
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const project = await getProject(params.projectId);
+
+  if (!project) {
+    return notFound();
+  }
 
   return (
-    <h1>{params.projectId}</h1>
+    <div>
+      <ProjectDetailView project={project} />
+    </div>
   )
 }

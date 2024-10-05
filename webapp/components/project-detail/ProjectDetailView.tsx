@@ -11,8 +11,7 @@ interface ProjectDetailViewProps {
 export default function ProjectDetailView({ project }: ProjectDetailViewProps) {
   return (
     <div>
-      {project.id}
-      <ProjectDetailHeader />
+      <ProjectDetailHeader project={project} />
       <ProjectDetailStepper />
       <ProjectDetailBody />
     </div>
