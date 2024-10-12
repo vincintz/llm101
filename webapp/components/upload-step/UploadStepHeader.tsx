@@ -3,8 +3,14 @@
 import { Upload } from 'lucide-react';
 import React, { useRef, useState } from 'react'
 import { Button } from '../ui/button';
+import { upload } from '@vercel/blob/client';
+import toast from 'react-hot-toast';
 
-function UploadStepHeader() {
+interface UploadStepHeaderProps {
+  projectId: string;
+};
+
+function UploadStepHeader({projectId}: UploadStepHeaderProps) {
 
   const [browserFiles, setBrowserFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -24,6 +30,53 @@ function UploadStepHeader() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setBrowserFiles(Array.from(e.target.files));
+    }
+  };
+
+  const getFileType = (file: File) => {
+    if (file.type.startsWith("video/")) return "video";
+    if (file.type.startsWith("audio/")) return "audio";
+    if (file.type === "text/plain") return "text";
+    if (file.type === "text/markdown") return "markdown";
+    return "other";
+  };
+
+  const handleUpload = async () => {
+    setUploading(true);
+    try {
+      const uploadPromises = browserFiles.map(async (file) => {
+        const fileData = {
+          projectId,
+          title: file.name,
+          fileType: getFileType(file),
+          mimeType: file.type,
+          size: file.size,
+        };
+
+        const filename = `${projectId}/${file.name}`;
+        const result = await upload(filename, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+          multipart: true,
+          clientPayload: JSON.stringify(fileData),
+        });
+
+        return result;
+      });
+
+      const uploadResults = await Promise.all(uploadPromises);
+      toast.success(`Files uploaded ${uploadResults.length} successfully`);
+      setBrowserFiles([]);
+      if (inputFileRef.current) {
+        inputFileRef.current.value = "";
+      }
+      // fetchFiles();
+
+    } catch (error) {
+      console.log("Error in upload process:", error);
+      toast.error("Failed to upload one or more files. Please try again.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -61,6 +114,8 @@ function UploadStepHeader() {
               ))}
             </ul>
             <Button
+              onClick={handleUpload}
+              disabled={uploading}
               className="mt-4 bg-main text-white rounded-3xl text-small"
             >
               <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />

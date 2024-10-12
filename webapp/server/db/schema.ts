@@ -21,6 +21,7 @@ export const assetTable = pgTable("asset", {
       onDelete: "cascade",
     } ),
   title: text("title").notNull(),
+  fileName: text("file_name").notNull(),
   fileUrl: text("file_url").notNull(),
   fileType: varchar("file_type", { length: 50 }).notNull(),
   mimeType: varchar("mime_type", { length: 100 }).notNull(),

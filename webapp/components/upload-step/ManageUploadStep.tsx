@@ -1,10 +1,14 @@
 import React from 'react'
 import UploadStepHeader from './UploadStepHeader'
 
-function ManageUploadStep() {
+interface ManageUploadStepProps {
+  projectId: string;
+};
+
+function ManageUploadStep({projectId}: ManageUploadStepProps) {
   return (
     <div>
-      <UploadStepHeader />
+      <UploadStepHeader projectId={projectId} />
     </div>
   )
 }
