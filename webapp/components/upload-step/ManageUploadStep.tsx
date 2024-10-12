@@ -1,8 +1,11 @@
 import React from 'react'
+import UploadStepHeader from './UploadStepHeader'
 
 function ManageUploadStep() {
   return (
-    <div>ManageUploadStep</div>
+    <div>
+      <UploadStepHeader />
+    </div>
   )
 }
 

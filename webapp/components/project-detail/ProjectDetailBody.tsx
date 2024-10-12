@@ -5,7 +5,7 @@ interface ProjectDetailBodyProps {
   currentStep: number;
   projectId: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  steps: { component: React.LazyExoticComponent<React.ComponentType<any>> }[];
+  steps: any[];
 }
 
 function ProjectDetailBody({
