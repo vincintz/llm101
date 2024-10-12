@@ -2,7 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 // TODO: add public and private routes
 
-const isPublicRoute = createRouteMatcher([ "/", "/pricing" ])
+const isPublicRoute = createRouteMatcher([ "/", "/pricing", "/api/upload" ])
 
 export default clerkMiddleware((auth, request) => {
   // if not authenticated, and access private route => redirect to login
