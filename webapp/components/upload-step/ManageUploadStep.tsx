@@ -77,13 +77,14 @@ function ManageUploadStep({projectId}: ManageUploadStepProps) {
       });
 
       const uploadResults = await Promise.all(uploadPromises);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchAssets();
+
       toast.success(`Files uploaded ${uploadResults.length} successfully`);
       setBrowserFiles([]);
       if (inputFileRef.current) {
         inputFileRef.current.value = "";
       }
-      fetchAssets();
-
     } catch (error) {
       console.log("Error in upload process:", error);
       toast.error("Failed to upload one or more files. Please try again.");
