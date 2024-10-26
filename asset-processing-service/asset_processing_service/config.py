@@ -1,4 +1,3 @@
-import logging
 import os
 from dotenv import load_dotenv
 
@@ -24,4 +23,3 @@ class Config:
 
 config = Config()
 HEADERS = {"Authorization": f"Bearer {config.SERVER_API_KEY}"}
-logging.getLogger().addHandler(logging.StreamHandler())

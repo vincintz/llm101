@@ -1,19 +1,17 @@
 import asyncio
 from collections import defaultdict
-import logging
 
 from asset_processing_service.api_client import fetch_jobs, update_job_details
 from asset_processing_service.config import config
+from asset_processing_service.logger import logger
 from asset_processing_service.job_processor import process_job
 
-
-log = logging.getLogger(__name__)
 
 async def job_fetcher(job_queue: asyncio.Queue, jobs_pending_or_in_progress: set):
     # skip: 39:40-39:43
     while True:
         try:
-            log.info("Fetching jobs...")
+            logger.info("Fetching jobs...")
             jobs = await fetch_jobs()
 
             for job in jobs:
@@ -21,10 +19,10 @@ async def job_fetcher(job_queue: asyncio.Queue, jobs_pending_or_in_progress: set
                 if job.status == "in_progress":
                     last_heartbeat_time = job.lastHeartBeat.timestamp()
                     time_since_last_heartbeat = abs(current_time - last_heartbeat_time)
-                    log.info(f"Time since last heartbeat for job {job.id}: {time_since_last_heartbeat}")
+                    logger.info(f"Time since last heartbeat for job {job.id}: {time_since_last_heartbeat}")
 
                     if time_since_last_heartbeat > config.STUCK_JOB_THRESHOLD_SECONDS:
-                        log.warning(f"Job {job.id} is stuck. Failing job.")
+                        logger.warning(f"Job {job.id} is stuck. Failing job.")
                         await update_job_details(job.id, {
                             "status": "failed",
                             "errorMessage": "Job is stuck - no heartbeat received recently",
@@ -35,20 +33,20 @@ async def job_fetcher(job_queue: asyncio.Queue, jobs_pending_or_in_progress: set
 
                 elif job.status in ["created", "failed"]:
                     if job.attempts >= config.MAX_JOB_ATTEMPTS:
-                        log.warning(f"Job {job.id} has exceeded max attempts. Failing job.")
+                        logger.warning(f"Job {job.id} has exceeded max attempts. Failing job.")
                         await update_job_details(job.id, {
                             "status": "max_attempts_exceeded",
                             "errorMessage": "Max attempts exceeded!",
                         })
 
                     elif job.id not in jobs_pending_or_in_progress:
-                        log.info("Adding job to queue: %s", job.id)
+                        logger.info("Adding job to queue: %s", job.id)
                         jobs_pending_or_in_progress.add(job.id)
                         await job_queue.put(job)
 
             await asyncio.sleep(5)
         except Exception as e:
-            print(f"Error fetching jobs: {e}")
+            logger.error(f"Error fetching jobs: {e}")
             await asyncio.sleep(5)
 
 async def worker(
@@ -62,12 +60,11 @@ async def worker(
             job = await job_queue.get()
 
             async with job_locks[job.id]:
-                print(f"Worker {worker_id} processing {job.id}...")
+                logger.info(f"Worker {worker_id} processing {job.id}...")
                 try:
                     await process_job(job)
-                    await update_job_details(job.id, {"status": "completed"})
                 except Exception as e:
-                    print(f"Error processing job {job.id}: {e}")
+                    logger.error(f"Error processing job {job.id}: {e}")
                     error_message = str(e)
                     await update_job_details(
                         job.id,
@@ -83,7 +80,7 @@ async def worker(
 
             job_queue.task_done()
         except Exception as e:
-            print(f"Error in worker {worker_id}: {e}")
+            logger.error(f"Error in worker {worker_id}: {e}")
             await asyncio.sleep(5)
 
 
@@ -113,7 +110,7 @@ def main():
     try:
         asyncio.run(async_main())
     except KeyboardInterrupt:
-        log.info("Program terminated")
+        logger.info("Program terminated")
         exit()
 
 
