@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-# TODO: install video editing tools
+RUN apt-get update && apt-get install -y ffmpeg
 
 WORKDIR /app
 
