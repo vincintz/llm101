@@ -58,7 +58,7 @@ async def update_job_heartbeat(job_id: str):
 
 async def fetch_asset(asset_id: str) -> Optional[Asset]:
     try:
-        url = f"{config.API_BASE_URL}/asset?asset_id={asset_id}"
+        url = f"{config.API_BASE_URL}/asset?assetId={asset_id}"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=HEADERS) as response:
