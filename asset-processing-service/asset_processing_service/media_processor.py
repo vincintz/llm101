@@ -187,7 +187,7 @@ async def transcribe_chunks(chunks: List[dict]) -> List[str]:
             # Open the temporary file for reading
             with open(temp_file_path, "rb") as audio_file:
                 # Call OpenAI's asynchronous transcription method
-                client = OpenAI(api_key=config.OPENAI_AI_KEY)
+                client = OpenAI(api_key=config.OPENAI_API_KEY)
                 transcription = client.audio.translations.create(
                     model=config.OPENAI_MODEL, file=audio_file
                 )
