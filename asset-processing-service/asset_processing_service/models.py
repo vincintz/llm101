@@ -14,7 +14,7 @@ class AssetProcessingJob(BaseModel):
     errorMessage: Optional[str] = None
 
 
-class Asset[BaseModel]:
+class Asset(BaseModel):
     id: str
     projectId: str
     title: str
