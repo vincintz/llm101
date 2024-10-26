@@ -26,12 +26,10 @@ function PromptEditorDialog({
   isSaving,
   handleSave,
 }: PromptEditorDialogProps) {
-  const [name, setName] = useState(prompt?.name || "");
-  const [content, setContent] = useState(prompt?.prompt || "");
+  const [name, setName] = useState("");
+  const [content, setContent] = useState("");
   const [isExceeded, setIsExceeded] = useState(false);
-  const [currentTokenCount, setCurrentTokenCount] = useState(
-    getPromptTokenCount(prompt?.prompt || "")
-  );
+  const [currentTokenCount, setCurrentTokenCount] = useState(0);
 
   useEffect(() => {
     if (prompt) {
