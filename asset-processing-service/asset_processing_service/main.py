@@ -66,7 +66,7 @@ async def worker(
                 try:
                     await process_job(job)
                 except Exception as e:
-                    logger.error(f"Error processing job {job.id}: {e}")
+                    logger.exception(f"Error processing job {job.id}: {e}")
                     error_message = str(e)
                     await update_job_details(
                         job.id,

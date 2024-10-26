@@ -60,7 +60,7 @@ async def process_job(job: AssetProcessingJob) -> None:
         await update_job_details(job.id, {"status": "completed"})
 
     except Exception as e:
-        logger.error(f"Error processing job {job.id}: {e}")
+        logger.exception(f"Error processing job '{job.id}': {e}")
         error_message = str(e)
         await update_job_details(
             job.id,
