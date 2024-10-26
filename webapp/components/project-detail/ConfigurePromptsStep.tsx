@@ -1,27 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import ConfigurePromptsStepHeader from './ConfigurePromptsStepHeader'
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Prompt } from '@/server/db/schema';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import PromptList from './PromptList';
-import ConfirmationModal from '../ConfirmationModal';
+"use client";
 
+import React, { useEffect, useState } from "react";
+import ConfirmationModal from "../ConfirmationModal";
+import ConfigurePromptsStepHeader from "./ConfigurePromptsStepHeader";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
+import { Prompt } from "@/server/db/schema";
+import toast from "react-hot-toast";
+import PromptList from "./PromptList";
+import PromptEditorDialog from "./PromptEditorDialog";
 
 interface ConfigurePromptsStepProps {
   projectId: string;
 }
 
-export default function ConfigurePromptsStep({
-  projectId,
-}: ConfigurePromptsStepProps) {
+function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [prompts, setPrompts] = useState<Prompt[]>([]);
-  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isImportingTemplate, setIsImportingTemplate] = useState(false);
-  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
+  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
+  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
+
+  console.log("DELETE PROMPT ID", deletePromptId);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -33,7 +37,7 @@ export default function ConfigurePromptsStep({
     } else {
       setSelectedPrompt(null);
     }
-  }, [searchParams]);
+  }, [searchParams, prompts]);
 
   useEffect(() => {
     const fetchPrompts = async () => {
@@ -56,6 +60,7 @@ export default function ConfigurePromptsStep({
 
   const handlePromptCreate = async () => {
     setIsCreatingPrompt(true);
+
     try {
       const response = await axios.post<Prompt>(
         `/api/projects/${projectId}/prompts`,
@@ -96,8 +101,34 @@ export default function ConfigurePromptsStep({
     }
   };
 
+  const handlePromptUpdate = async (prompt: Prompt) => {
+    setIsSaving(true);
+    try {
+      const response = await axios.patch(
+        `/api/projects/${projectId}/prompts`,
+        prompt
+      );
+
+      setPrompts((prevPrompts) =>
+        prevPrompts.map((p) => (p.id === prompt.id ? response.data : p))
+      );
+      toast.success("Prompt updated successfully");
+      handleOnClose();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update prompt");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleOnClose = () => {
+    setSelectedPrompt(null);
+    router.push("?tab=prompts");
+  };
+
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-4 md:space-x-6">
       <ConfigurePromptsStepHeader
         isCreatingPrompt={isCreatingPrompt}
         handlePromptCreate={handlePromptCreate}
@@ -116,8 +147,17 @@ export default function ConfigurePromptsStep({
         onConfirm={() => deletePromptId && handlePromptDelete(deletePromptId)}
         isLoading={isDeleting}
       />
-      {/* <PromptContainerDialog /> */}
-      {/* <TemplateSelectionPopup /> */}
+      <PromptEditorDialog
+        isOpen={!!selectedPrompt}
+        prompt={selectedPrompt}
+        handleOnClose={handleOnClose}
+        isSaving={isSaving}
+        handleSave={handlePromptUpdate}
+      />
+      {/** TODO:  This is where the user can edit and save changes to a prompt */}
+      {/* <TemplateSectionPopup /> */}
     </div>
-  )
+  );
 }
+
+export default ConfigurePromptsStep;
