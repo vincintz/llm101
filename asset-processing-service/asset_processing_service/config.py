@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from asset_processing_service.logger import logger
 
 # Load environment variables from .env file
 load_dotenv()
@@ -19,7 +20,9 @@ class Config:
     HEARBEAT_INTERVAL_SECONDS = int(os.getenv("HEARBEAT_INTERVAL_SECONDS", "10"))
     MAX_CHUNK_SIZE_BYTES = int(os.getenv("MAX_CHUNK_SIZE_BYTES", str(24 * 1024 * 1024)))
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "whisper-1")
+    OPENAI_AI_KEY = get_required_env("OPEN_AI_KEY")
 
+logger.info("Config loaded successfully")
 
 config = Config()
 HEADERS = {"Authorization": f"Bearer {config.SERVER_API_KEY}"}
