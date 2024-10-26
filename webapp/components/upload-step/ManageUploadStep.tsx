@@ -164,6 +164,7 @@ function ManageUploadStep({projectId}: ManageUploadStepProps) {
     if (file.type.startsWith("audio/")) return "audio";
     if (file.type === "text/plain") return "text";
     if (file.type === "text/markdown") return "markdown";
+    console.warn(`Unknown file type: "${file.type}"`);
     return "other";
   };
 
