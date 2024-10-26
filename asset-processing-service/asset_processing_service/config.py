@@ -17,6 +17,9 @@ class Config:
     STUCK_JOB_THRESHOLD_SECONDS = int(os.getenv("STUCK_JOB_THRESHOLD_SECONDS", "30"))
     MAX_JOB_ATTEMPTS = int(os.getenv("MAX_JOB_ATTEMPTS", "3"))
     MAX_NUM_WORKERS = int(os.getenv("MAX_NUM_WORKERS", "2"))
+    HEARBEAT_INTERVAL_SECONDS = int(os.getenv("HEARBEAT_INTERVAL_SECONDS", "10"))
+    MAX_CHUNK_SIZE_BYTES = int(os.getenv("MAX_CHUNK_SIZE_BYTES", str(24 * 1024 * 1024)))
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "whisper-1")
 
 
 config = Config()

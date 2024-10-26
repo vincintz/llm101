@@ -13,3 +13,17 @@ class AssetProcessingJob(BaseModel):
     lastHeartBeat: datetime
     errorMessage: Optional[str] = None
 
+
+class Asset[BaseModel]:
+    id: str
+    projectId: str
+    title: str
+    fileName: str
+    fileUrl: str
+    fileType: str
+    mimeType: str
+    size: int
+    content: str
+    tokenCount: int
+    createdAt: datetime
+    updatedAt: datetime

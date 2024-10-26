@@ -4,6 +4,7 @@ import logging
 
 from asset_processing_service.api_client import fetch_jobs, update_job_details
 from asset_processing_service.config import config
+from asset_processing_service.job_processor import process_job
 
 
 log = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ async def worker(
             async with job_locks[job.id]:
                 print(f"Worker {worker_id} processing {job.id}...")
                 try:
-                    # TODO:
+                    await process_job(job)
                     await update_job_details(job.id, {"status": "completed"})
                 except Exception as e:
                     print(f"Error processing job {job.id}: {e}")
