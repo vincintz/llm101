@@ -106,6 +106,47 @@ export const promptRelations = relations(promptsTable, ({ one }) => ({
   }),
 }));
 
+export const templatesTable = pgTable("templates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: varchar("user_id", { length: 50 }).notNull(),
+  title: text("title").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const templatesRelations = relations(templatesTable, ({ many }) => ({
+  templatePrompts: many(templatePromptsTable),
+}));
+
+export const templatePromptsTable = pgTable("template_prompts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  templateId: uuid("template_id")
+    .notNull()
+    .references(() => templatesTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  prompt: text("prompt"),
+  tokenCount: integer("token_count").default(0),
+  order: integer("order").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const templatePromptsRelations = relations(
+  templatePromptsTable,
+  ({ one }) => ({
+    template: one(templatesTable, {
+      fields: [templatePromptsTable.templateId],
+      references: [templatesTable.id],
+    }),
+  })
+);
+
 // Types
 export type InsertProject = typeof projectTable.$inferInsert;
 export type Project = typeof projectTable.$inferSelect;
@@ -115,3 +156,7 @@ export type InsertAssetProcessingJob = typeof assetProcessingJobTable.$inferInse
 export type AssetProcessingJob = typeof assetProcessingJobTable.$inferSelect;
 export type Prompt = typeof promptsTable.$inferSelect;
 export type InsertPrompt = typeof promptsTable.$inferInsert;
+export type Template = typeof templatesTable.$inferSelect;
+export type InsertTemplate = typeof templatesTable.$inferInsert;
+export type TemplatePrompt = typeof templatePromptsTable.$inferSelect;
+export type InsertTemplatePrompt = typeof templatePromptsTable.$inferInsert;

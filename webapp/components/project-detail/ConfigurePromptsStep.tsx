@@ -19,8 +19,7 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [prompts, setPrompts] = useState<Prompt[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isImportingTemplate, setIsImportingTemplate] = useState(false);
+  const [isImportingTemplate] = useState(false);
   const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
