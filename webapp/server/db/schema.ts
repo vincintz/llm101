@@ -64,6 +64,7 @@ export const assetRelations = relations(assetTable, ({one}) => ({
 
 export const projectRelations = relations(projectTable, ({many}) => ({
   asset: many(assetTable),
+  prompt: many(promptsTable),
 }));
 
 export const assetProcessingJobRelations = relations(
@@ -80,6 +81,31 @@ export const assetProcessingJobRelations = relations(
   }),
 );
 
+export const promptsTable = pgTable("prompts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => projectTable.id, {
+      onDelete: "cascade",
+    }),
+  name: text("name").notNull(),
+  prompt: text("prompt"),
+  tokenCount: integer("token_count").default(0),
+  order: integer("order").notNull(), // Future us will add in re-order
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const promptRelations = relations(promptsTable, ({ one }) => ({
+  project: one(projectTable, {
+    fields: [promptsTable.projectId],
+    references: [projectTable.id],
+  }),
+}));
+
 // Types
 export type InsertProject = typeof projectTable.$inferInsert;
 export type Project = typeof projectTable.$inferSelect;
@@ -87,4 +113,5 @@ export type InsertAsset = typeof assetTable.$inferInsert;
 export type Asset = typeof assetTable.$inferSelect;
 export type InsertAssetProcessingJob = typeof assetProcessingJobTable.$inferInsert;
 export type AssetProcessingJob = typeof assetProcessingJobTable.$inferSelect;
-
+export type Prompt = typeof promptsTable.$inferSelect;
+export type InsertPrompt = typeof promptsTable.$inferInsert;
