@@ -85,7 +85,7 @@ function ManageUploadStep({projectId}: ManageUploadStepProps) {
     fetchAssetProcessingJobs();
     const fetchAssetProcessingJobsInterval = setInterval(
       fetchAssetProcessingJobs,
-      1000,
+      15000,
     );
     return () => {
       clearInterval(fetchAssetProcessingJobsInterval);
