@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm';
 import { bigint, integer, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { Asset } from 'next/font/google';
 
 
 export const projectTable = pgTable("projects", {
@@ -65,6 +66,7 @@ export const assetRelations = relations(assetTable, ({one}) => ({
 export const projectRelations = relations(projectTable, ({many}) => ({
   asset: many(assetTable),
   prompt: many(promptsTable),
+  generatedContent: many(generatedContentTable),
 }));
 
 export const assetProcessingJobRelations = relations(
@@ -147,6 +149,24 @@ export const templatePromptsRelations = relations(
   })
 );
 
+export const generatedContentTable = pgTable("generated_content", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .notNull()
+    .references(() => projectTable.id, {
+      onDelete: "cascade",
+    }),
+  name: text("name").notNull(),
+  result: text("result").notNull(),
+  order: integer("order").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+
 // Types
 export type InsertProject = typeof projectTable.$inferInsert;
 export type Project = typeof projectTable.$inferSelect;
@@ -160,3 +180,5 @@ export type Template = typeof templatesTable.$inferSelect;
 export type InsertTemplate = typeof templatesTable.$inferInsert;
 export type TemplatePrompt = typeof templatePromptsTable.$inferSelect;
 export type InsertTemplatePrompt = typeof templatePromptsTable.$inferInsert;
+export type GeneratedContent = typeof generatedContentTable.$inferSelect;
+export type InsertGeneratedoContent = typeof generatedContentTable.$inferInsert;
