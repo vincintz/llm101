@@ -7,12 +7,14 @@ interface ConfigurePromptsStepHeaderProps {
   isCreatingPrompt: boolean;
   handlePromptCreate: () => void;
   isImportingTemplate: boolean,
+  setIsTemplatePopupOpen: (value: boolean) => void;
 };
 
 function ConfigurePromptsStepHeader({
   isCreatingPrompt,
   handlePromptCreate,
   isImportingTemplate,
+  setIsTemplatePopupOpen,
 }: ConfigurePromptsStepHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start justify-between">
@@ -20,7 +22,10 @@ function ConfigurePromptsStepHeader({
         Step 3: Prompts
       </h2>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-        <Button className="bg-main/10 text-main font-semibold hover:bg-main/15 text-sm sm:text-base rounded-lg w-full sm:w-auto h-8 sm:h-10">
+        <Button
+          onClick={() => setIsTemplatePopupOpen(true)}
+          className="bg-main/10 text-main font-semibold hover:bg-main/15 text-sm sm:text-base rounded-lg w-full sm:w-auto h-8 sm:h-10"
+        >
           <LayoutTemplate className="h-4 w-4 mr-2" strokeWidth={3} />
           { isImportingTemplate ? "Importing..." : "Load Template" }
         </Button>

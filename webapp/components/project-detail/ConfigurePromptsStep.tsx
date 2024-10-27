@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import PromptList from "./PromptList";
 import PromptEditorDialog from "./PromptEditorDialog";
 import { CommonPrompt } from "@/interfaces/CommonPrompts";
+import TemplateSelectionPopup from "../TemplateSelectionPopup";
 
 interface ConfigurePromptsStepProps {
   projectId: string;
@@ -19,10 +20,11 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [prompts, setPrompts] = useState<CommonPrompt[]>([]);
-  const [isImportingTemplate] = useState(false);
+  const [isImportingTemplate, setIsImportingTemplate] = useState(false);
   const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<CommonPrompt | null>(null);
+  const [isTemplatePopupOpen, setIsTemplatePopupOpen] = useState(false);
 
   console.log("DELETE PROMPT ID", deletePromptId);
 
@@ -126,12 +128,31 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
     router.push("?tab=prompts");
   };
 
+  const handleTemplateSelect = async (templateId: string) => {
+    setIsImportingTemplate(true);
+    try {
+      const response = await axios.post<CommonPrompt[]>(
+        `/api/projects/${projectId}/import-template`,
+        { templateId }
+      );
+      setPrompts((prev) => [...prev, ...response.data]);
+      toast.success("Template imported successfully");
+    } catch (error) {
+      console.error("Failed to import template prompts", error);
+      toast.error("Failed to import template");
+    } finally {
+      setIsImportingTemplate(false);
+      setIsTemplatePopupOpen(false);
+    }
+  };
+
   return (
     <div className="space-y-4 md:space-x-6">
       <ConfigurePromptsStepHeader
         isCreatingPrompt={isCreatingPrompt}
         handlePromptCreate={handlePromptCreate}
         isImportingTemplate={isImportingTemplate}
+        setIsTemplatePopupOpen={setIsTemplatePopupOpen}
       />
       <PromptList
         prompts={prompts}
@@ -153,8 +174,11 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
         isSaving={isSaving}
         handleSave={handlePromptUpdate}
       />
-      {/** TODO:  This is where the user can edit and save changes to a prompt */}
-      {/* <TemplateSectionPopup /> */}
+      <TemplateSelectionPopup
+        isOpen={isTemplatePopupOpen}
+        onClose={() => setIsTemplatePopupOpen(false)}
+        onTemplateSelect={handleTemplateSelect}
+      />
     </div>
   );
 }
