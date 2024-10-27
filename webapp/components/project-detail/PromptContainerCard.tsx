@@ -1,6 +1,5 @@
 "use client";
 
-import { Prompt } from "@/server/db/schema";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { MessageSquare, Trash2 } from "lucide-react";
@@ -13,9 +12,10 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { Card, CardContent } from "../ui/card";
+import { CommonPrompt } from "@/interfaces/CommonPrompts";
 
 interface PromptContainerCardProps {
-  prompt: Prompt;
+  prompt: CommonPrompt;
   handleOnDelete: () => void;
   handleOnClick: (promptId: string) => void;
 }

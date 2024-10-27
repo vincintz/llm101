@@ -1,11 +1,11 @@
-import { Prompt } from "@/server/db/schema";
 import React from "react";
 import PromptContainerCard from "./PromptContainerCard";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
+import { CommonPrompt } from "@/interfaces/CommonPrompts";
 
 interface PromptListProps {
-  prompts: Prompt[];
+  prompts: CommonPrompt[];
   isLoading: boolean;
   setDeletePromptId: React.Dispatch<React.SetStateAction<string | null>>;
 }

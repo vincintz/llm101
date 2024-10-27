@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent } from "../ui/dialog";
+import { Dialog, DialogTitle, DialogContent } from "./ui/dialog";
 import { Loader2, MessageSquare, Save } from "lucide-react";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
 import { formatTokens, getPromptTokenCount } from "@/utils/token-helper";
 import { cn } from "@/lib/utils";
 import { MAX_TOKENS_PROMPT } from "@/lib/constants";

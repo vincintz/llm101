@@ -5,10 +5,10 @@ import ConfirmationModal from "../ConfirmationModal";
 import ConfigurePromptsStepHeader from "./ConfigurePromptsStepHeader";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { Prompt } from "@/server/db/schema";
 import toast from "react-hot-toast";
 import PromptList from "./PromptList";
 import PromptEditorDialog from "./PromptEditorDialog";
+import { CommonPrompt } from "@/interfaces/CommonPrompts";
 
 interface ConfigurePromptsStepProps {
   projectId: string;
@@ -18,11 +18,11 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [prompts, setPrompts] = useState<CommonPrompt[]>([]);
   const [isImportingTemplate] = useState(false);
   const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
   const [deletePromptId, setDeletePromptId] = useState<string | null>(null);
-  const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
+  const [selectedPrompt, setSelectedPrompt] = useState<CommonPrompt | null>(null);
 
   console.log("DELETE PROMPT ID", deletePromptId);
 
@@ -42,7 +42,7 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
     const fetchPrompts = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get<Prompt[]>(
+        const response = await axios.get<CommonPrompt[]>(
           `/api/projects/${projectId}/prompts`
         );
         setPrompts(response.data);
@@ -61,7 +61,7 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
     setIsCreatingPrompt(true);
 
     try {
-      const response = await axios.post<Prompt>(
+      const response = await axios.post<CommonPrompt>(
         `/api/projects/${projectId}/prompts`,
         {
           name: "New Prompt",
@@ -100,7 +100,7 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
     }
   };
 
-  const handlePromptUpdate = async (prompt: Prompt) => {
+  const handlePromptUpdate = async (prompt: CommonPrompt) => {
     setIsSaving(true);
     try {
       const response = await axios.patch(
