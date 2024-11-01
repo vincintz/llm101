@@ -20,7 +20,7 @@ function GenerateContentStep({
   const [projectHasPrompts, setProjectHasPrompts] = useState(false);
   const [isAssetsTokenExceeded, setIsAssetsTokenExceeded] = useState(false);
   const [isPromptsTokenExceeded, setIsPromptsTokenExceeded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>(
     []
@@ -196,6 +196,8 @@ function GenerateContentStep({
         totalPrompts={totalPrompts}
         errorMessage={errorMessage}
         generatedContent={generatedContent}
+        projectId={projectId}
+        setGeneratedContent={setGeneratedContent}
       />
     </div>
   )
