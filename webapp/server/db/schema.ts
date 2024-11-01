@@ -14,6 +14,12 @@ export const projectTable = pgTable("projects", {
   userId: varchar("user_id", { length: 50 }).notNull(),
 });
 
+export const projectRelations = relations(projectTable, ({many}) => ({
+  assets: many(assetTable),
+  prompts: many(promptsTable),
+  generatedContent: many(generatedContentTable),
+}));
+
 export const assetTable = pgTable("asset", {
   id: uuid("id").defaultRandom().primaryKey(),
   projectId: uuid("project_id")
@@ -61,12 +67,6 @@ export const assetRelations = relations(assetTable, ({one}) => ({
     fields: [assetTable.projectId],
     references: [projectTable.id],
   }),
-}));
-
-export const projectRelations = relations(projectTable, ({many}) => ({
-  asset: many(assetTable),
-  prompt: many(promptsTable),
-  generatedContent: many(generatedContentTable),
 }));
 
 export const assetProcessingJobRelations = relations(
