@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
-import { projectTable, templatesTable } from "./db/schema";
+import { projectsTable, templatesTable } from "./db/schema";
 import { redirect } from "next/navigation";
 
 export async function createProject() {
@@ -13,7 +13,7 @@ export async function createProject() {
   }
 
   const [newProject] = await db
-    .insert(projectTable)
+    .insert(projectsTable)
     .values({
       title: "New Project",
       userId,

@@ -1,5 +1,5 @@
 import { db } from "@/server/db";
-import { projectTable } from "@/server/db/schema";
+import { projectsTable } from "@/server/db/schema";
 import { getAuth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -29,12 +29,12 @@ export async function PATCH(
   const { title } = validatedData.data;
 
   console.log("Updating>", title, userId)
-  const updatedProject = await db.update(projectTable).set({
+  const updatedProject = await db.update(projectsTable).set({
     title,
   }).where(
     and(
-      eq(projectTable.userId, userId),
-      eq(projectTable.id, params.projectId),
+      eq(projectsTable.userId, userId),
+      eq(projectsTable.id, params.projectId),
     )
   )
   .returning();
@@ -56,11 +56,11 @@ export async function DELETE(
   }
 
   const deletedProject = await db
-    .delete(projectTable)
+    .delete(projectsTable)
     .where(
       and(
-        eq(projectTable.userId, userId),
-        eq(projectTable.id, params.projectId)
+        eq(projectsTable.userId, userId),
+        eq(projectsTable.id, params.projectId)
       )
     )
     .returning();

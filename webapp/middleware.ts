@@ -3,7 +3,12 @@ import { NextResponse } from "next/server";
 
 // TODO: add public and private routes
 
-const isPublicRoute = createRouteMatcher([ "/", "/pricing", "/api/upload" ])
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/pricing",
+  "/api/upload",
+  "/api/webhooks/stripe",
+])
 const isSecureRoute = createRouteMatcher([
   "/api/asset-processing-job",
   "/api/asset",

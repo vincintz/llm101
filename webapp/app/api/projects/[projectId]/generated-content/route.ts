@@ -1,5 +1,5 @@
 import { db } from "@/server/db";
-import { generatedContentTable, projectTable } from "@/server/db/schema";
+import { generatedContentTable, projectsTable } from "@/server/db/schema";
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { generateText } from "ai";
@@ -37,8 +37,8 @@ export async function POST(
   try {
     const projectId = params.projectId;
 
-    const project = await db.query.projectTable.findFirst({
-      where: eq(projectTable.id, projectId),
+    const project = await db.query.projectsTable.findFirst({
+      where: eq(projectsTable.id, projectId),
       with: {
         assets: true,
         prompts: true,

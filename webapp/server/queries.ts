@@ -3,7 +3,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { Project, projectTable, Template, templatesTable } from "./db/schema";
+import { Project, projectsTable, subscriptionsTable, Template, templatesTable } from "./db/schema";
+import Stripe from "stripe";
+import stripe from "@/lib/stripe";
+
 
 export function getProjectsForUser(): Promise<Project[]> {
   const { userId } = auth();
@@ -12,8 +15,8 @@ export function getProjectsForUser(): Promise<Project[]> {
     throw new Error("User not found");
   }
 
-  const projects = db.query.projectTable.findMany({
-    where: eq(projectTable.userId, userId),
+  const projects = db.query.projectsTable.findMany({
+    where: eq(projectsTable.userId, userId),
     orderBy: (projects, {desc}) => [desc(projects.updatedAt)],
   });
 
@@ -27,7 +30,7 @@ export async function getProject(projectId: string) {
     throw new Error("User not found");
   }
 
-  const project = await db.query.projectTable.findFirst({
+  const project = await db.query.projectsTable.findFirst({
     where: (project, { eq, and }) =>
       and (eq(project.id, projectId), eq(project.userId, userId)),
   });
@@ -68,4 +71,40 @@ export async function getTemplate(id: string): Promise<Template | undefined> {
   });
 
   return template;
+}
+
+export async function getUserSubscription(): Promise<Stripe.Subscription | null> {
+  const { userId } = auth();
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  try {
+    const subscription = await db.query.subscriptionsTable.findFirst({
+      where: eq(subscriptionsTable.userId, userId),
+    });
+
+    if (!subscription) {
+      console.log("No stripe subscription found for user", userId);
+      return null;
+    }
+
+    const stripeSubscription = await stripe.subscriptions.retrieve(
+      subscription.stripeSubscriptionId
+    );
+
+    return stripeSubscription;
+  } catch (error) {
+    // If the subscription doesn't exist or there's an error, log it and return null
+    if (
+      error instanceof Stripe.errors.StripeError &&
+      error.code === "resource_missing"
+    ) {
+      console.log("Subscription not found in Stripe.");
+      return null;
+    }
+
+    console.error("Error fetching subscription from Stripe:", error);
+    throw new Error("Failed to retrieve subscription details.");
+  }
 }

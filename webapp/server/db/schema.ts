@@ -1,9 +1,15 @@
-import { relations } from 'drizzle-orm';
-import { bigint, integer, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
-import { Asset } from 'next/font/google';
+import { relations } from "drizzle-orm";
+import {
+  text,
+  pgTable,
+  uuid,
+  timestamp,
+  varchar,
+  bigint,
+  integer,
+} from "drizzle-orm/pg-core";
 
-
-export const projectTable = pgTable("projects", {
+export const projectsTable = pgTable("projects", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -14,19 +20,19 @@ export const projectTable = pgTable("projects", {
   userId: varchar("user_id", { length: 50 }).notNull(),
 });
 
-export const projectRelations = relations(projectTable, ({many}) => ({
+export const projectsRelations = relations(projectsTable, ({ many }) => ({
   assets: many(assetTable),
   prompts: many(promptsTable),
   generatedContent: many(generatedContentTable),
 }));
 
-export const assetTable = pgTable("asset", {
+export const assetTable = pgTable("assets", {
   id: uuid("id").defaultRandom().primaryKey(),
   projectId: uuid("project_id")
     .notNull()
-    .references( () => projectTable.id, {
+    .references(() => projectsTable.id, {
       onDelete: "cascade",
-    } ),
+    }),
   title: text("title").notNull(),
   fileName: text("file_name").notNull(),
   fileUrl: text("file_url").notNull(),
@@ -42,6 +48,13 @@ export const assetTable = pgTable("asset", {
     .$onUpdate(() => new Date()),
 });
 
+export const assetRelations = relations(assetTable, ({ one }) => ({
+  project: one(projectsTable, {
+    fields: [assetTable.projectId],
+    references: [projectsTable.id],
+  }),
+}));
+
 export const assetProcessingJobTable = pgTable("asset_processing_jobs", {
   id: uuid("id").defaultRandom().primaryKey(),
   assetId: uuid("asset_id")
@@ -50,7 +63,7 @@ export const assetProcessingJobTable = pgTable("asset_processing_jobs", {
     .references(() => assetTable.id, { onDelete: "cascade" }),
   projectId: uuid("project_id")
     .notNull()
-    .references(() => projectTable.id, { onDelete: "cascade" }),
+    .references(() => projectsTable.id, { onDelete: "cascade" }),
   status: text("status").notNull(),
   errorMessage: text("error_message"),
   attempts: integer("attempts").notNull().default(0),
@@ -62,32 +75,25 @@ export const assetProcessingJobTable = pgTable("asset_processing_jobs", {
     .$onUpdate(() => new Date()),
 });
 
-export const assetRelations = relations(assetTable, ({one}) => ({
-  project: one(projectTable, {
-    fields: [assetTable.projectId],
-    references: [projectTable.id],
-  }),
-}));
-
 export const assetProcessingJobRelations = relations(
   assetProcessingJobTable,
-  ({one}) => ({
+  ({ one }) => ({
     asset: one(assetTable, {
       fields: [assetProcessingJobTable.assetId],
       references: [assetTable.id],
     }),
-    project: one(projectTable, {
+    project: one(projectsTable, {
       fields: [assetProcessingJobTable.projectId],
-      references: [projectTable.id],
+      references: [projectsTable.id],
     }),
-  }),
+  })
 );
 
 export const promptsTable = pgTable("prompts", {
   id: uuid("id").defaultRandom().primaryKey(),
   projectId: uuid("project_id")
     .notNull()
-    .references(() => projectTable.id, {
+    .references(() => projectsTable.id, {
       onDelete: "cascade",
     }),
   name: text("name").notNull(),
@@ -102,9 +108,9 @@ export const promptsTable = pgTable("prompts", {
 });
 
 export const promptRelations = relations(promptsTable, ({ one }) => ({
-  project: one(projectTable, {
+  project: one(projectsTable, {
     fields: [promptsTable.projectId],
-    references: [projectTable.id],
+    references: [projectsTable.id],
   }),
 }));
 
@@ -153,7 +159,7 @@ export const generatedContentTable = pgTable("generated_content", {
   id: uuid("id").defaultRandom().primaryKey(),
   projectId: uuid("project_id")
     .notNull()
-    .references(() => projectTable.id, {
+    .references(() => projectsTable.id, {
       onDelete: "cascade",
     }),
   name: text("name").notNull(),
@@ -166,14 +172,42 @@ export const generatedContentTable = pgTable("generated_content", {
     .$onUpdate(() => new Date()),
 });
 
+export const GeneratedContentRelations = relations(
+  generatedContentTable,
+  ({ one }) => ({
+    project: one(projectsTable, {
+      fields: [generatedContentTable.projectId],
+      references: [projectsTable.id],
+    }),
+  })
+);
+
+export const stripeCustomersTable = pgTable("stripe_customers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: varchar("user_id", { length: 50 }).notNull().unique(),
+  stripeCustomerId: varchar("stripe_customer_id", { length: 100 })
+    .notNull()
+    .unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const subscriptionsTable = pgTable("subscriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: varchar("user_id", { length: 50 }).notNull(),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 100 })
+    .notNull()
+    .unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 
 // Types
-export type InsertProject = typeof projectTable.$inferInsert;
-export type Project = typeof projectTable.$inferSelect;
-export type InsertAsset = typeof assetTable.$inferInsert;
+export type InsertProject = typeof projectsTable.$inferInsert;
+export type Project = typeof projectsTable.$inferSelect;
 export type Asset = typeof assetTable.$inferSelect;
-export type InsertAssetProcessingJob = typeof assetProcessingJobTable.$inferInsert;
+export type InsertAsset = typeof assetTable.$inferInsert;
 export type AssetProcessingJob = typeof assetProcessingJobTable.$inferSelect;
+export type InsertAssetProcessingJob =
+  typeof assetProcessingJobTable.$inferInsert;
 export type Prompt = typeof promptsTable.$inferSelect;
 export type InsertPrompt = typeof promptsTable.$inferInsert;
 export type Template = typeof templatesTable.$inferSelect;
@@ -181,4 +215,8 @@ export type InsertTemplate = typeof templatesTable.$inferInsert;
 export type TemplatePrompt = typeof templatePromptsTable.$inferSelect;
 export type InsertTemplatePrompt = typeof templatePromptsTable.$inferInsert;
 export type GeneratedContent = typeof generatedContentTable.$inferSelect;
-export type InsertGeneratedoContent = typeof generatedContentTable.$inferInsert;
+export type InsertGeneratedContent = typeof generatedContentTable.$inferInsert;
+export type StripeCustomer = typeof stripeCustomersTable.$inferSelect;
+export type InsertStripeCustomer = typeof stripeCustomersTable.$inferInsert;
+export type Subscription = typeof subscriptionsTable.$inferSelect;
+export type InsertSubscription = typeof subscriptionsTable.$inferInsert;
