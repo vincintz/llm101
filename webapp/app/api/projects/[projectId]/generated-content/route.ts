@@ -10,7 +10,7 @@ import { z } from "zod";
 export const maxDuration = 60; // seconds
 
 export async function GET(
-  request: NextRequest,
+  _: NextRequest,
   { params }: { params: { projectId: string } }
 ) {
   try {
@@ -31,7 +31,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  _: Request,
   { params }: { params: { projectId: string } }
 ) {
   try {
@@ -128,7 +128,7 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request,
+  _: Request,
   { params }: { params: { projectId: string } }
 ) {
   try {

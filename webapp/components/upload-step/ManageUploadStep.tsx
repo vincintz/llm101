@@ -37,7 +37,6 @@ function ManageUploadStep({projectId}: ManageUploadStepProps) {
         `/api/projects/${projectId}/assets`
       );
       setUploadAssets(response.data);
-      console.log(">", response.data);
     } catch (error) {
       console.error("Failed to fetch assets", error);
     } finally {

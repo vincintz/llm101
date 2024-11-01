@@ -128,16 +128,57 @@ function GenerateContentStep({
     projectHasPrompts,
   ]);
 
+  useEffect(() => {
+    let pollingInterval: NodeJS.Timeout;
+
+    const fetchGeneratedContent = async () => {
+      try {
+        const response = await axios.get<GeneratedContent[]>(
+          `/api/projects/${projectId}/generated-content`
+        );
+
+        setGeneratedContent(response.data);
+        setGeneratedCount(response.data.length);
+
+        if (response.data.length === totalPrompts) {
+          clearInterval(pollingInterval);
+          setIsGenerating(false);
+          toast.success("Content generation complete");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch generated content");
+      }
+    };
+
+    if (isGenerating) {
+      pollingInterval = setInterval(() => {
+        fetchGeneratedContent();
+      }, 1000);
+    }
+
+    // Clean up
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [isGenerating, projectId, totalPrompts]);
+
   const startGeneration = async () => {
-    setIsGenerating(true);
+    setGeneratedContent([]);
+    setGeneratedCount(0);
+
     try {
+      await axios.delete(`/api/projects/${projectId}/generated-content`);
+      setIsGenerating(true);
+
       await axios.post<GeneratedContent[]>(
         `/api/projects/${projectId}/generated-content`
       );
     } catch (error) {
       console.log(error);
       toast.error("Failed to generate content");
-    } finally {
       setIsGenerating(false);
     }
   };

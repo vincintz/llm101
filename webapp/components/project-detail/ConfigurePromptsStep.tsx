@@ -26,8 +26,6 @@ function ConfigurePromptsStep({ projectId }: ConfigurePromptsStepProps) {
   const [selectedPrompt, setSelectedPrompt] = useState<CommonPrompt | null>(null);
   const [isTemplatePopupOpen, setIsTemplatePopupOpen] = useState(false);
 
-  console.log("DELETE PROMPT ID", deletePromptId);
-
   const router = useRouter();
   const searchParams = useSearchParams();
 
