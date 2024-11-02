@@ -1,9 +1,27 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Box, Star, LayoutTemplate, Sparkles } from "lucide-react";
+import { Box, Star, LayoutTemplate, Sparkles, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 export default function SubscriptionMessage() {
+  const [isTrial, setIsTrial] = useState(false);
+
+  if (isTrial) {
+    return (
+      <Alert>
+        <CalendarClock className="h-4 w-4" />
+        <AlertTitle>Trial version</AlertTitle>
+        <AlertDescription>
+          Feel free to look around. Have a nice day!
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 z-10 p-4 sm:p-6 md:p-8">
       <Card className="p-4 sm:p-6 w-full max-w-[90%] sm:max-w-md border-2 border-main bg-[#f0f8ff] rounded-3xl shadow-lg relative overflow-hidden">
@@ -45,8 +63,16 @@ export default function SubscriptionMessage() {
           >
             <Link href="/settings">Subscribe Now</Link>
           </Button>
-          <p className="text-[10px] sm:text-xs text-gray-500 text-center">
-            30-day money-back guarantee. No long-term commitments.
+          <Button
+            className="sm:text-xs text-gray-500"
+            variant="link"
+            onClick={() => setIsTrial(true)}
+          >
+            Try for free
+          </Button>
+          <p className="text-[10px] sm:text-xs text-red-500 text-center">
+            {/*30-day money-back guarantee. No long-term commitments.*/}
+            This is just a test! Please do not enter your credit card details.
           </p>
         </CardContent>
       </Card>
